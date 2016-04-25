@@ -22,11 +22,12 @@ public class MainActivity extends AppCompatActivity {
 // Custom view of the GPS tracker
 class CustomViewGPSTracker extends LinearLayout {
 
-    private TextView tv_gps_state;
-    private TextView tv_current_speed;
-    private TextView tv_average_speed;
-    private TextView tv_overall_time;
-    private Button btn_tracking;
+    private TextView tvGpsState;
+    private TextView tvCurrentSpeed;
+    private TextView tvAverageSpeed;
+    private TextView tvOverallTime;
+    private Button btnTracking;
+    private boolean isTracking = false;
 
     public CustomViewGPSTracker(Context context) {
         super(context);
@@ -47,10 +48,25 @@ class CustomViewGPSTracker extends LinearLayout {
         LayoutInflater li = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         li.inflate(R.layout.compound_view_layout, this, true);
 
-        tv_gps_state = (TextView) findViewById(R.id.tv_gps_state);
-        tv_current_speed = (TextView) findViewById(R.id.tv_current_speed);
-        tv_average_speed = (TextView) findViewById(R.id.tv_average_speed);
-        tv_overall_time = (TextView) findViewById(R.id.tv_overall_time);
-        btn_tracking = (Button) findViewById(R.id.btn_tracking);
+        tvGpsState = (TextView) findViewById(R.id.tv_gps_state);
+        tvCurrentSpeed = (TextView) findViewById(R.id.tv_current_speed);
+        tvAverageSpeed = (TextView) findViewById(R.id.tv_average_speed);
+        tvOverallTime = (TextView) findViewById(R.id.tv_overall_time);
+        btnTracking = (Button) findViewById(R.id.btn_tracking);
+        final String textStartTracking = getResources().getString(R.string.start_tracking);
+        final String textStopTracking = getResources().getString(R.string.stop_tracking);
+
+        btnTracking.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (btnTracking.getText().toString().equals(textStopTracking)) {
+                    btnTracking.setText(R.string.start_tracking);
+                    isTracking = true;
+                } else if (btnTracking.getText().toString().equals(textStartTracking)) {
+                    btnTracking.setText(R.string.stop_tracking);
+                    isTracking = false;
+                }
+            }
+        });
     }
 }
