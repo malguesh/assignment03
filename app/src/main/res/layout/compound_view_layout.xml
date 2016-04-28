@@ -8,7 +8,7 @@
         android:id="@+id/tv_gps_state"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/gps_state" />
+        android:text="@string/gps_state_inactive" />
 
     <TextView
         android:id="@+id/tv_current_speed"

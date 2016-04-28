@@ -3,13 +3,16 @@
 
     // -- GPS Tracker
 
-    // text views
-    <string name="gps_state">GPS Inactive</string>
+    // TextView GPS state
+    <string name="gps_state_inactive">GPS Inactive</string>
+    <string name="gps_state_active">GPD Active</string>
+
+    // TextViews of speed and time information
     <string name="current_speed">Current Speed: N/A</string>
     <string name="average_speed">Average Speed: N/A</string>
     <string name="overall_time">Overall Time: 0s</string>
 
-    // tracking button
+    // Tracking button
     <string name="start_tracking">Start tracking</string>
     <string name="stop_tracking">Stop tracking</string>
 
