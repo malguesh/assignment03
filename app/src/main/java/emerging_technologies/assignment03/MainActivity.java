@@ -5,7 +5,7 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-    import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -32,22 +32,22 @@ public class MainActivity extends AppCompatActivity {
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         btnTracking = (Button) findViewById(R.id.btn_tracking);
-        cvGPSTracker = (CustomViewGPSTracker) findViewById(R.id.customGpsTracker);
+        cvGPSTracker = (CustomViewGPSTracker) findViewById(R.id.custom_gps_tracker);
 
         initLocationListener();
 
         btnTracking.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("values: " + cvGPSTracker.values);
+                System.out.println("values: " + cvGPSTracker.speedValues);
                 if (!isTracking) {
                     btnTracking.setText(R.string.stop_tracking);
                     addLocationListener();
                     isTracking = true;
                 } else {
                     btnTracking.setText(R.string.start_tracking);
-                    isTracking = false;
                     locationManager.removeUpdates(locationListener);
+                    isTracking = false;
                 }
             }
         });
@@ -59,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
             public void onLocationChanged(Location location) {
                 float speed = location.getSpeed() * 3600 / 1000;
                 System.out.println("location.getSpeed(): " + speed);
-                System.out.println("values.size(): " + cvGPSTracker.values.size());
-                cvGPSTracker.fillVaues(speed);
+                System.out.println("values.size(): " + cvGPSTracker.speedValues.size());
+                cvGPSTracker.fillValues(speed);
             }
 
             @Override
@@ -94,7 +94,8 @@ public class MainActivity extends AppCompatActivity {
 class CustomViewGPSTracker extends LinearLayout {
 
     private TextView tvGpsState, tvCurrentSpeed, tvAverageSpeed, tvOverallTime;
-    public ArrayList<Float> values = new ArrayList<Float>();
+    // TODO: change speedValue into private and erase the test in MainActivity println(cv.speedValues)
+    public ArrayList<Float> speedValues = new ArrayList<Float>();
 
     public CustomViewGPSTracker(Context context) {
         super(context);
@@ -121,10 +122,16 @@ class CustomViewGPSTracker extends LinearLayout {
         tvOverallTime = (TextView) findViewById(R.id.tv_overall_time);
     }
 
-    public void fillVaues(float speed) {
-        values.add(speed);
-        if (values.size() > 100) {
-            values.remove(0);
+    /**
+     * Fills an ArrayList to stock the speeds
+     * Checks that the ArrayList is never longer than 100 values
+     *
+     * @param speed
+     */
+    public void fillValues(float speed) {
+        speedValues.add(speed);
+        if (speedValues.size() > 100) {
+            speedValues.remove(0);
         }
     }
 
