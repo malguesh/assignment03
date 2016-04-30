@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private LocationManager locationManager;
@@ -22,7 +23,8 @@ public class MainActivity extends AppCompatActivity {
     private CustomGraph cvCustomGraph;
     private Button btnTracking;
     private LocationListener locationListener;
-    private TextView tvGpsState, tvCurrentSpeed, tvAverageSpeed, tvOverallTime;
+    float average_speed;
+    int time;
 
     // -- LifeCycle
 
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         btnTracking = (Button) findViewById(R.id.btn_tracking);
         cvGPSTracker = (CustomViewGPSTracker) findViewById(R.id.custom_gps_tracker);
         cvCustomGraph = (CustomGraph) findViewById(R.id.custom_graph);
+        average_speed = 0;
 
         initLocationListener();
 
@@ -44,11 +47,15 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("values: " + cvCustomGraph.listSpeeds);
                 if (!isTracking) {
                     btnTracking.setText(R.string.stop_tracking);
+                    time = 0;
                     addLocationListener();
                     isTracking = true;
                 } else {
                     btnTracking.setText(R.string.start_tracking);
                     locationManager.removeUpdates(locationListener);
+                    cvGPSTracker.tvCurrentSpeed.setText(R.string.current_speed);
+                    cvGPSTracker.tvAverageSpeed.setText(R.string.average_speed);
+                    cvGPSTracker.tvOverallTime.setText(R.string.overall_time);
                     isTracking = false;
                 }
             }
@@ -61,12 +68,24 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initLocationListener() {
         locationListener = new LocationListener() {
+
             @Override
             public void onLocationChanged(Location location) {
                 float speed = location.getSpeed() * 3600 / 1000;
-                System.out.println("location.getSpeed(): " + speed);
-                System.out.println("values.size(): " + cvCustomGraph.listSpeeds.size());
+
+                cvGPSTracker.tvCurrentSpeed.setText("Current Speed: " + speed);
                 cvCustomGraph.fillListSpeeds(speed);
+
+                for (int i = 0; i < cvCustomGraph.listSpeeds.size(); i++) {
+                    average_speed += cvCustomGraph.listSpeeds.get(i);
+                }
+                average_speed = average_speed / cvCustomGraph.listSpeeds.size();
+
+                cvGPSTracker.tvAverageSpeed.setText("Average Speed: " + average_speed);
+
+                cvGPSTracker.tvOverallTime.setText("Overall Time: " + time + "s");
+                time += 1;
+
                 cvCustomGraph.invalidate();
             }
 
@@ -92,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
     private void addLocationListener() {
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                 1000,
-                5,
+                0,
                 locationListener);
     }
 }
@@ -102,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
  */
 class CustomViewGPSTracker extends LinearLayout {
 
-    private TextView tvGpsState, tvCurrentSpeed, tvAverageSpeed, tvOverallTime;
+    public TextView tvGpsState, tvCurrentSpeed, tvAverageSpeed, tvOverallTime;
 
     public CustomViewGPSTracker(Context context) {
         super(context);

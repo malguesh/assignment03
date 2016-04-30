@@ -16,6 +16,7 @@ public class CustomGraph extends View {
 
     private Paint paintGraphLine;
     private Paint paintSpeedLine;
+    private Paint paintAverage;
     public ArrayList<Float> listSpeeds;
     float xStart;
     float yStart;
@@ -42,11 +43,12 @@ public class CustomGraph extends View {
     private void init() {
         paintGraphLine = new Paint(Paint.ANTI_ALIAS_FLAG);
         paintSpeedLine = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paintAverage = new Paint(Paint.ANTI_ALIAS_FLAG);
         listSpeeds = new ArrayList<>();
 
         paintGraphLine.setColor(Color.WHITE);
         paintSpeedLine.setColor(Color.GREEN);
-
+        paintAverage.setColor(Color.RED);
     }
 
     public void onDraw(Canvas canvas) {
@@ -56,6 +58,15 @@ public class CustomGraph extends View {
         int height = canvas.getHeight();
         // value to get the distance between every line
         int distHeight = height / 6;
+        float average_speed = 0;
+
+        if (listSpeeds.size() == 100) {
+            for (int i = 0; i < listSpeeds.size(); i++) {
+                average_speed += listSpeeds.get(i);
+            }
+            average_speed = average_speed / listSpeeds.size();
+            canvas.drawLine(0, width - (average_speed / 60 * width), width, height - (average_speed / 60 * height), paintAverage);
+        }
 
         // Loop to draw the white lines
         for (int i = distHeight; i < height - distHeight; i += distHeight) {
@@ -71,6 +82,9 @@ public class CustomGraph extends View {
             canvas.drawLine(xStart, yStart, xStop, yStop, paintSpeedLine);
             xStart = xStop;
             yStart = yStop;
+        }
+        if (listSpeeds.size() == 100) {
+
         }
     }
 
