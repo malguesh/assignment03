@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         btnTracking.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("values: " + cvCustomGraph.listSpeeds);
                 if (!isTracking) {
                     btnTracking.setText(R.string.stop_tracking);
                     time = 0;
