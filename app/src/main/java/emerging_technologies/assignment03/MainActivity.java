@@ -14,16 +14,17 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 public class MainActivity extends AppCompatActivity {
 
     private LocationManager locationManager;
     private boolean isTracking = false;
     private CustomViewGPSTracker cvGPSTracker;
+    private CustomGraph cvCustomGraph;
     private Button btnTracking;
     private LocationListener locationListener;
     private TextView tvGpsState, tvCurrentSpeed, tvAverageSpeed, tvOverallTime;
+
+    // -- LifeCycle
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +34,14 @@ public class MainActivity extends AppCompatActivity {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         btnTracking = (Button) findViewById(R.id.btn_tracking);
         cvGPSTracker = (CustomViewGPSTracker) findViewById(R.id.custom_gps_tracker);
+        cvCustomGraph = (CustomGraph) findViewById(R.id.custom_graph);
 
         initLocationListener();
 
         btnTracking.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("values: " + cvGPSTracker.speedValues);
+                System.out.println("values: " + cvCustomGraph.listSpeeds);
                 if (!isTracking) {
                     btnTracking.setText(R.string.stop_tracking);
                     addLocationListener();
@@ -53,14 +55,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Init Location Listener to make a difference with the addLocationListener
+     * because we need to remove the listener when we stop tracking
+     */
     private void initLocationListener() {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 float speed = location.getSpeed() * 3600 / 1000;
                 System.out.println("location.getSpeed(): " + speed);
-                System.out.println("values.size(): " + cvGPSTracker.speedValues.size());
-                cvGPSTracker.fillValues(speed);
+                System.out.println("values.size(): " + cvCustomGraph.listSpeeds.size());
+                cvCustomGraph.fillListSpeeds(speed);
+                cvCustomGraph.invalidate();
             }
 
             @Override
@@ -90,12 +97,12 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 
-// Custom view of the GPS tracker
+/**
+ * Custom View of the GPS Tracker
+ */
 class CustomViewGPSTracker extends LinearLayout {
 
     private TextView tvGpsState, tvCurrentSpeed, tvAverageSpeed, tvOverallTime;
-    // TODO: change speedValue into private and erase the test in MainActivity println(cv.speedValues)
-    public ArrayList<Float> speedValues = new ArrayList<Float>();
 
     public CustomViewGPSTracker(Context context) {
         super(context);
@@ -122,17 +129,5 @@ class CustomViewGPSTracker extends LinearLayout {
         tvOverallTime = (TextView) findViewById(R.id.tv_overall_time);
     }
 
-    /**
-     * Fills an ArrayList to stock the speeds
-     * Checks that the ArrayList is never longer than 100 values
-     *
-     * @param speed
-     */
-    public void fillValues(float speed) {
-        speedValues.add(speed);
-        if (speedValues.size() > 100) {
-            speedValues.remove(0);
-        }
-    }
 
 }
